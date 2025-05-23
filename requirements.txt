@@ -1,0 +1,15 @@
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+langchain>=0.1.0
+pypdf>=3.17.0
+faiss-cpu>=1.7.4
+huggingface-hub>=0.20.0
+sentence-transformers>=2.3.0
+torch
+langchain-community
+hf_xet
+langchain_huggingface
+faiss-cpu
+numpy<2
+python-telegram-bot>=20.8
+python-dotenv>=1.0.0
