@@ -2,6 +2,10 @@
 
 A Telegram bot that helps users find information about Research and Innovation Foundation's (RIF) Open Calls using natural language queries. The bot uses FAISS for semantic search across PDF documents and supports multilingual queries.
 
+Deploy: Railway.com
+TelegramBotID = @AbasisNikitabot
+
+
 ## Features
 
 - 🔍 Semantic search across RIF Open Calls documents
