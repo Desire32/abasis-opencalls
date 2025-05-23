@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.docstore.in_memory import InMemoryDocstore
 
 class FAISSLoader:
-    def __init__(self, folder_path="pdfs", model_name="sentence-transformers/all-MiniLM-L6-v2"):
+    def __init__(self, folder_path="pdfs", model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
         self.folder_path = folder_path
         self.model_name = model_name
 
@@ -77,4 +77,3 @@ if __name__ == "__main__":
     # for i, result in enumerate(results, 1):
     #     print(f"\nResult {i}:")
     #     print(result)
-

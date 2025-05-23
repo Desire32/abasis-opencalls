@@ -3,8 +3,8 @@ import logging
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from faiss_loader import FAISSLoader
-from pdf_loader import PDFLoader
+from FAISS_loader import FAISSLoader
+from PDF_loader import PDFLoader
 
 # Configure logging
 logging.basicConfig(
@@ -50,31 +50,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "- What funding is available for startups?\n"
         "- When is the next deadline?\n"
         "- What are the eligibility criteria?\n\n"
-        "Commands:\n"
-        "/start - Start the bot\n"
-        "/help - Show this help message\n"
-        "/refresh - Refresh PDF documents and rebuild index"
     )
     await update.message.reply_text(help_text)
-
-async def refresh_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Refresh PDFs and rebuild index."""
-    try:
-        await update.message.reply_text("Starting refresh... This may take a few minutes.")
-        
-        # Download and process new PDFs
-        global documents
-        documents = pdf_loader.refresh()
-        await update.message.reply_text(f"Downloaded and processed {len(documents)} documents.")
-        
-        # Rebuild FAISS index
-        global faiss_loader
-        faiss_loader = FAISSLoader()
-        
-        await update.message.reply_text("✅ Refresh complete! You can now ask questions about the latest documents.")
-    except Exception as e:
-        logger.error(f"Error during refresh: {str(e)}")
-        await update.message.reply_text("❌ Sorry, there was an error during refresh. Please try again later.")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle user messages and respond with relevant information."""
@@ -120,7 +97,6 @@ def main() -> None:
     # Add handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("refresh", refresh_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Run the bot
