@@ -1,7 +1,7 @@
 [phases.setup]
 commands = [
-  "python3 -m venv /opt/venv",
-  ". /opt/venv/bin/activate",
+  "python3 -m ensurepip --upgrade",
+  "pip install --upgrade pip setuptools",
   "pip install -r requirements.txt"
 ]
 
