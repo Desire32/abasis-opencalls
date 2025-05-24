@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -57,19 +58,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     global faiss_loader, documents
 
     try:
-        # Lazy load on first request
         if faiss_loader is None:
-            await update.message.reply_text("⏳ Initializing model and index, please wait a few seconds...")
+            await update.message.reply_text("⚠️ Модель ещё не готова, попробуйте через пару секунд.")
+            return
 
-            logger.info("Loading and indexing documents (lazy)...")
-            pdf_loader = PDFLoader()
-            documents = pdf_loader.refresh()
-            logger.info(f"Loaded {len(documents)} documents")
-
-            faiss_loader = FAISSLoader()  # This builds the index
-            logger.info("FAISS index is ready.")
-
-        # Process user's question
         question = update.message.text
         await update.message.chat.send_action(action="typing")
 
@@ -93,6 +85,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("⚠️ An error occurred while processing your request.")
 
 
+# ---------------------- Async preload function ----------------------
+async def preload():
+    global faiss_loader, documents
+    logger.info("Preloading documents and FAISS index...")
+    pdf_loader = PDFLoader()
+    documents = pdf_loader.refresh()
+    faiss_loader = FAISSLoader()
+
+    logger.info(f"Preloading completed. Loaded {len(documents)} documents.")
+
+
 # ---------------------- Entry point ----------------------
 def main() -> None:
     application = Application.builder().token(TOKEN).build()
@@ -101,8 +104,12 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    logger.info("Starting bot...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    async def run():
+        await preload() # additional async
+        logger.info("Starting bot polling...")
+        await application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+    asyncio.run(run())
 
 
 if __name__ == '__main__':
